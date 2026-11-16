@@ -72,9 +72,7 @@ fn from_raw_rejects_wrong_length() {
 #[test]
 fn verifies_go_signature() {
     let sig = Signature::try_from(key_hex("sig_hex")).unwrap();
-    Verifier
-        .verify(public_key(), &key_hex("msg_hex"), &sig)
-        .unwrap();
+    Verifier::verify(public_key(), &key_hex("msg_hex"), &sig).unwrap();
 }
 
 #[test]
@@ -86,20 +84,18 @@ fn rejects_tampered_signature_and_message() {
     let mut bad_sig = sig.clone();
     bad_sig[100] ^= 0x01;
     let bad_sig = Signature::try_from(bad_sig).unwrap();
-    assert!(Verifier.verify(pk, &msg, &bad_sig).is_err());
+    assert!(Verifier::verify(pk, &msg, &bad_sig).is_err());
 
     let mut bad_msg = msg.clone();
     bad_msg[0] ^= 0x01;
     let sig = Signature::try_from(sig).unwrap();
-    assert!(Verifier.verify(pk, &bad_msg, &sig).is_err());
+    assert!(Verifier::verify(pk, &bad_msg, &sig).is_err());
 }
 
 #[test]
 fn rejects_signature_with_nonempty_context() {
     let sig = Signature::try_from(key_hex("ctx_sig_hex")).unwrap();
-    assert!(Verifier
-        .verify(public_key(), &key_hex("msg_hex"), &sig)
-        .is_err());
+    assert!(Verifier::verify(public_key(), &key_hex("msg_hex"), &sig).is_err());
 }
 
 #[test]
@@ -108,9 +104,7 @@ fn rejects_wrong_length_signature() {
     assert!(Signature::try_from(&sig[..sig.len() - 1]).is_err());
     // An Ed25519-sized signature parses but cannot verify under an ML-DSA key.
     let short = Signature::try_from(&sig[..64]).unwrap();
-    assert!(Verifier
-        .verify(public_key(), &key_hex("msg_hex"), &short)
-        .is_err());
+    assert!(Verifier::verify(public_key(), &key_hex("msg_hex"), &short).is_err());
 }
 
 #[test]
